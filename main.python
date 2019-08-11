@@ -1,0 +1,173 @@
+#OpenCV program to perform edge detection
+#import libraries of python Open
+#where its functionality resides
+import cv2
+#np is an alias pointing to nump
+import numpy as np
+#capture frames from a camera
+cap=cv2.VideoCapture()
+#print the version of cv2 used
+print(cv2.__version__)
+cap=cv2.VideoCapture('C:/Users/Ramesh/Downloads/27_18-23_18-32(14).avi')
+#read the image from the video
+success,image = cap.read()
+#defining count variable
+count = 0
+success = True
+while success:
+ cv2.imwrite("frame%d.jpg" % count, image)
+# save frame as JPEG file
+success,image =cap.read()
+#give the output as true if success
+print('Read a new frame: ', success)
+count += 1
+fps=cap.get(cv2.CAP_PROP_FPS)
+#defining the timestamps as a variable
+timestamps=[cap.get(cv2.CAP_PROP_POS_MSEC)]
+#calculate the timestamp
+calc_timestamps=[0.0]
+while(cap.isOpened()):
+frame_exists,curr_frame=cap.read()
+if frame_exists:
+timestamps.append(cap.get(cv2.CAP_PROP_POS_MSEC))       
+	calc_timestamps.append(calc_timestamps[-1]+1000/fps)
+else:        
+	break
+#close the window
+cap.release()
+for i,(ts,cts) in enumerate(zip(timestamps,calc_timestamps))
+#we will get frame difference of the output
+print('Frame %d difference:'%i,abs(ts-cts))
+#loop runs if capturing has been
+while(1):
+#reads frames from a camera
+ret,frame=cap.read()
+#converting bgr to gray
+if ret is True:
+     gray= cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+else:
+     continue
+#define range of red colour in gray
+lower_red=np.array([30,150,50])
+upper_red=np.array([255,255,300])
+#create a red gray colour boundaryand threshold image
+mask=cv2.inRange(gray,lower_red,upper_red)
+#bitwise and mask and original image
+res=cv2.bitwise_and(frame,frame,mask=mask)
+#display an original image
+cv2.imshow('Original',frame)
+#finds edges in the input video and marks them in the output map edge
+edges=cv2.Canny(frame,100,200)
+#display edges in the frame
+cv2.imshow('Edges',edges)
+#wait for esc key to stop
+k=cv2.waitKey(5)&0xff 
+if k==1:
+    break
+time=[cap.get(cv2.CAP_MSEC)]
+#more density
+if(count>=20):
+	time=90
+#normal density
+elif((count>=10)&(count<20)):
+	time=60
+#no traffic
+else:
+	time=30
+#close the window
+cap.release()
+#de-allocate any associated memory usage
+cv2.destroyAllWindows()
+import tensor as tf
+tensorflowNet = cv2.dnn.readNetFromTensorflow('time_graph.pb', 'graph.pbtxt')
+cap= cv2.imread('../content/27_18-23_18-32(14).avi')
+rows, cols, channels = cap.shape
+tensorflowNet.setInput(cv2.dnn.blobFromImage(cap, size=(300, 300), swapRB=True, crop=False))
+# Runs a forward pass to compute the net output
+networkOutput = tensorflowNet.forward()
+# Loop on the outputs
+for detection in networkOutput[0,0]:
+    score = float(detection[2])
+    if score > 0.2:
+                left = detection[3] * cols
+                top = detection[4] * rows
+                right = detection[5] * cols
+                bottom = detection[6] * row
+  #draw a rectangle around detected objects
+cv2.rectangle(cap, (int(left), int(top)), (int(right), int(bottom)), (0, 0, 255), thickness=2)
+# Show the image with a rectagle surrounding the detected objects 
+cv2.imshow('graph',cap)
+cv2.waitKey()
+cv2.destroyAllWindows()
+import numpy as np 
+import tensorflow as tf 
+import matplotlib.pyplot as plt 
+np.random.seed(101) 
+tf.set_random_seed(101) 
+# Genrating random linear data 
+# There will be 50 data points ranging from 0 to 50 
+x = np.linspace(0, 50, 50) 
+y = np.linspace(0, 50, 50) 
+
+# Adding noise to the random linear data 
+x += np.random.uniform(-4, 4, 50) 
+y += np.random.uniform(-4, 4, 50) 
+
+n = len(x) # Number of data points 
+# Plot of Training Data 
+plt.scatter(x, y) 
+plt.xlabel('x') 
+plt.xlabel('y') 
+plt.title("Training Data") 
+plt.show() 
+#graph
+X = tf.placeholder("float") 
+Y = tf.placeholder("float") 
+D = tf.Variable(np.random.randn(), name = "D") 
+T = tf.Variable(np.random.randn(), name = "T") 
+learning_rate = 0.01
+training_epochs = 1000
+# Hypothesis 
+y_pred = tf.add(tf.multiply(X, D), T) 
+
+# Mean Squared Error Cost Function 
+cost = tf.reduce_sum(tf.pow(y_pred-Y, 2)) / (2 * n) 
+
+# Gradient Descent Optimizer 
+optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost) 
+
+# Global Variables Initializer 
+init = tf.global_variables_initializer() 
+# Starting the Tensorflow Session 
+with tf.Session() as sess: 
+	
+	# Initializing the Variables 
+	sess.run(init) 
+	
+	# Iterating through all the epochs 
+	for epoch in range(training_epochs): 
+		
+		# Feeding each data point into the optimizer using Feed Dictionary 
+		for (_x, _y) in zip(x, y): 
+			sess.run(optimizer, feed_dict = {X : _x, Y : _y}) 
+		
+		# Displaying the result after every 50 epochs 
+		if (epoch + 1) % 50 == 0: 
+			# Calculating the cost a every epoch 
+			c = sess.run(cost, feed_dict = {X : x, Y : y}) 
+			print("Epoch", (epoch + 1), ": cost =", c, "D =", sess.run(D), "T =", sess.run(T)) 
+	
+	# Storing necessary values to be used outside the Session 
+	training_cost = sess.run(cost, feed_dict ={X: x, Y: y}) 
+	density = sess.run(D) 
+	time = sess.run(T) 
+#output table
+# Calculating the predictions 
+predictions = density * x + time 
+print("Training cost =", training_cost, "density =", density, "time =", time, '\n') 
+# Plotting the Results 
+plt.plot(x, y, 'ro', label ='Original data') 
+plt.plot(x, predictions, label ='Fitted line') 
+plt.title('Linear Regression Result') 
+plt.legend() 
+plt.show()
